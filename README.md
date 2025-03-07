@@ -1,7 +1,7 @@
 # Group 19 MSBA 405 Pipeline (Final Project)
-# Pipeline to 
+# Pipeline to Understanding Movie Revenue, Ratings, and Industry Trends 
 
-1. The Data
+1. The Data 
 
 For this analysis, we used a total of three datasets:
 
