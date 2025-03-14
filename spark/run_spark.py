@@ -102,5 +102,7 @@ spark = SparkSession.builder \
 
 sc = spark.sparkContext
 '''
+import os
+from pyspark.sql import SparkSession
 print("Spark is successfully running on EC2!")
 
