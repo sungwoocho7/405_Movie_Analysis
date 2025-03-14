@@ -79,33 +79,12 @@ joined_df = df_tmdb.join(df_imbd,
                          (df_tmdb["title_lower"] == df_imbd["movie_lower"]) & 
                          (df_tmdb["runtime"] == df_imbd["runtime"]), 
                          "inner")
-'''
+
 # Save merged data
 joined_df.write.mode("overwrite").parquet(f"{DATA_PATH}/merged_movies.parquet")
-'''
-print('hhhhhh')
-'''
+
+
 
 print(f"Data cleaned and merged! {joined_df.count()} rows saved as merged_movies.parquet.")
-'''
-
-
-'''
-import os
-from pyspark.sql import SparkSession
-
-# Ensure Java is set up correctly
-os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-11-openjdk-amd64"
-
-# Initialize Spark
-spark = SparkSession.builder \
-    .appName('ec2-spark') \
-    .config('spark.driver.memory', '4g') \  # Adjust based on your instance size
-    .config('spark.sql.warehouse.dir', '/home/ubuntu/spark-warehouse') \
-    .config('spark.checkpoint.dir', '/home/ubuntu/spark-checkpoint') \
-    .getOrCreate()
-
-sc = spark.sparkContext
-'''
 
 
