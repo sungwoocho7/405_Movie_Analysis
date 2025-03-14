@@ -3,6 +3,7 @@
 # ========== CONFIGURATION ==========
 KAGGLE_JSON_PATH=~/team19/.kaggle/kaggle.json
 DATASET_PATH=~/team19/data
+SPARK_SCRIPT=~/team19/spark/run_spark.py
 
 # List of datasets (Format: "dataset-name|kaggle-slug")
 DATASETS=(
@@ -16,10 +17,6 @@ if [ ! -f "$KAGGLE_JSON_PATH" ]; then
     echo "ERROR: kaggle.json not found at $KAGGLE_JSON_PATH"
     exit 1
 fi
-
-# Extract username and key from kaggle.json
-KAGGLE_USERNAME=$(jq -r .username $KAGGLE_JSON_PATH)
-KAGGLE_KEY=$(jq -r .key $KAGGLE_JSON_PATH)
 
 # Check if jq is installed
 if ! command -v jq &> /dev/null; then
@@ -37,18 +34,14 @@ for DATA in "${DATASETS[@]}"; do
     KAGGLE_SLUG=$(echo $DATA | cut -d "|" -f 2)
 
     echo "Downloading dataset: $DATASET_NAME..."
-    
-    wget --header="Authorization: Kaggle $KAGGLE_USERNAME:$KAGGLE_KEY" \
-         -O $DATASET_PATH/$DATASET_NAME.zip \
-         "https://www.kaggle.com/api/v1/datasets/download/$KAGGLE_SLUG"
+
+    kaggle datasets download $KAGGLE_SLUG -p $DATASET_PATH --unzip
 
     if [ $? -ne 0 ]; then
         echo "ERROR: Failed to download $DATASET_NAME!"
         continue
     fi
 
-    echo "Unzipping dataset: $DATASET_NAME..."
-    unzip -o $DATASET_PATH/$DATASET_NAME.zip -d $DATASET_PATH/
 done
 
 echo "All Kaggle datasets downloaded and extracted successfully."
@@ -66,3 +59,23 @@ if [ $? -ne 0 ]; then
 else
     echo "CPI data downloaded successfully: $CPI_FILE"
 fi
+
+# ========== STEP 4: EXECUTE SPARK SCRIPT ==========
+echo "Running Spark script..."
+spark-submit $SPARK_SCRIPT
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: Spark script execution failed!"
+    exit 1
+fi
+
+# ========== STEP 5: RENAME SPARK CSV OUTPUT ==========
+echo "Renaming Spark-generated CSV..."
+
+cd $DATASET_PATH/movies_cleaned_csv/
+mv part-*.csv ../movies_df.csv
+
+cd ..
+rm -r movies_cleaned_csv
+
+echo "CSV successfully renamed to movies_df.csv"
