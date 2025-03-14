@@ -54,7 +54,7 @@ fix_encoding_udf = udf(fix_encoding, StringType())
 
 for col_name in ["director", "movie", "stars", "genre"]:
     df_imbd = df_imbd.withColumn(col_name, fix_encoding_udf(df_imbd[col_name]))
-'''
+
 # ========== STEP 6: STANDARDIZE CERTIFICATION RATINGS ==========
 df_imbd = df_imbd.withColumn(
     "certificate",
@@ -70,7 +70,7 @@ df_imbd = df_imbd.withColumn(
     .when(col("certificate") == "(Banned)", "Banned")
     .otherwise(col("certificate"))
 )
-
+'''
 # ========== STEP 7: MATCH MOVIES FROM BOTH DATASETS ==========
 df_tmdb = df_tmdb.withColumn("title_lower", lower(col("title")))
 df_imbd = df_imbd.withColumn("movie_lower", lower(col("movie")))
