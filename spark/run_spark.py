@@ -1,4 +1,4 @@
-'''import os
+import os
 import unicodedata
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
@@ -6,7 +6,7 @@ from pyspark.sql.functions import (
     regexp_replace, when, udf
 )
 from pyspark.sql.types import StringType
-
+'''
 # ========== STEP 1: SETUP SPARK ==========
 spark = SparkSession.builder.getOrCreate()
 
@@ -82,9 +82,12 @@ joined_df = df_tmdb.join(df_imbd,
 
 # Save merged data
 joined_df.write.mode("overwrite").parquet(f"{DATA_PATH}/merged_movies.parquet")
+'''
 
 print(f"Data cleaned and merged! {joined_df.count()} rows saved as merged_movies.parquet.")
-'''
+
+
+
 '''
 import os
 from pyspark.sql import SparkSession
@@ -102,8 +105,5 @@ spark = SparkSession.builder \
 
 sc = spark.sparkContext
 '''
-import os
-from pyspark.sql import SparkSession
-os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-11-openjdk-amd64"
-print("Spark is successfully running on EC2!")
+
 
