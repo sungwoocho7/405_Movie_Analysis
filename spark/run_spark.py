@@ -6,14 +6,14 @@ from pyspark.sql.functions import (
     regexp_replace, when, udf
 )
 from pyspark.sql.types import StringType
-'''
+
 # ========== STEP 1: SETUP SPARK ==========
 spark = SparkSession.builder.getOrCreate()
 
 # Get the absolute path to your data folder
 HOME_DIR = os.path.expanduser("~")
 DATA_PATH = os.path.join(HOME_DIR, "team19", "data")
-
+'''
 # ========== STEP 2: LOAD DATA ==========
 df_tmdb = spark.read.csv(f"{DATA_PATH}/TMDB_movie_dataset_v11.csv", header=True, inferSchema=True)
 df_imbd = spark.read.csv(f"{DATA_PATH}/IMBD.csv", header=True, inferSchema=True)
@@ -83,9 +83,11 @@ joined_df = df_tmdb.join(df_imbd,
 # Save merged data
 joined_df.write.mode("overwrite").parquet(f"{DATA_PATH}/merged_movies.parquet")
 '''
+print('hhhhhh')
+'''
 
 print(f"Data cleaned and merged! {joined_df.count()} rows saved as merged_movies.parquet.")
-
+'''
 
 
 '''
