@@ -1,5 +1,4 @@
-WITH MovieData AS (
-
+WITH MovieData_CTE AS (
     SELECT 
         title,
         director,
@@ -8,9 +7,9 @@ WITH MovieData AS (
         revenue,
         budget,
         release_date,
-        EXTRACT(YEAR FROM release_date) AS release_year,       
-	EXTRACT(MONTH FROM release_date) AS release_month
-    FROM read_csv_auto('/mnt/data/movies_cleaned.csv', HEADER=TRUE)
+        EXTRACT(YEAR FROM release_date) AS release_year,
+        EXTRACT(MONTH FROM release_date) AS release_month
+    FROM read_csv_auto('/content/movies_cleaned (1).csv', HEADER=TRUE)
     WHERE revenue > 0  
 )
 
@@ -21,8 +20,7 @@ SELECT
     SUM(revenue) AS total_revenue,
     AVG(revenue) AS avg_movie_revenue,
     AVG(vote_average) AS avg_movie_rating
-FROM MovieData
+FROM MovieData_CTE
 WHERE release_year IS NOT NULL AND genres IS NOT NULL
 GROUP BY release_year, genres
 ORDER BY release_year DESC;
-
