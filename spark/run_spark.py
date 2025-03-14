@@ -13,11 +13,11 @@ spark = SparkSession.builder.getOrCreate()
 # Get the absolute path to your data folder
 HOME_DIR = os.path.expanduser("~")
 DATA_PATH = os.path.join(HOME_DIR, "team19", "data")
-'''
+
 # ========== STEP 2: LOAD DATA ==========
 df_tmdb = spark.read.csv(f"{DATA_PATH}/TMDB_movie_dataset_v11.csv", header=True, inferSchema=True)
 df_imbd = spark.read.csv(f"{DATA_PATH}/IMBD.csv", header=True, inferSchema=True)
-
+'''
 # ========== STEP 3: CLEAN TMDB DATA ==========
 df_tmdb = df_tmdb.withColumn("vote_average", col("vote_average").cast("float")) \
                  .withColumn("vote_count", col("vote_count").cast("int")) \
