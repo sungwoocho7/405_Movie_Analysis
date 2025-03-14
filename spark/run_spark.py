@@ -104,5 +104,6 @@ sc = spark.sparkContext
 '''
 import os
 from pyspark.sql import SparkSession
+os.environ["JAVA_HOME"] = "/usr/lib/jvm/java-11-openjdk-amd64"
 print("Spark is successfully running on EC2!")
 
