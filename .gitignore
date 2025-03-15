@@ -1,2 +1,3 @@
 data/
 .kaggle/kaggle.json
+duckdb/final.db

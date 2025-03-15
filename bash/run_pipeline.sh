@@ -79,3 +79,28 @@ cd ..
 rm -r movies_cleaned_csv
 
 echo "CSV successfully renamed to movies_df.csv"
+# Set paths
+DUCKDB=duckdb
+DATABASE="../duckdb/final.db"
+QUERIES="../duckdb/duckdb_query.sql"
+# Function to check command success
+check() {
+    if [ $? -eq 0 ]; then
+        echo "$1"
+    else
+        echo "$2"
+        exit 1
+    fi
+}
+
+# Run DuckDB queries
+run_duckdb() {
+    echo "Running DuckDB queries..."
+    mkdir -p duckdb  # Ensure directory exists
+    $DUCKDB "$DATABASE" < "$QUERIES"
+    check "DuckDB queries executed successfully." "DuckDB execution failed."
+}
+# Run the DuckDB function
+run_duckdb
+
+check "PIPELINE RAN CLEAN AS HELL" "PIPELINE WENT TO SHIT"
