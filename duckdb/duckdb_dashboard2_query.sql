@@ -13,7 +13,7 @@ WITH MovieData AS (
     WHERE revenue > 0  -- Exclude movies with zero revenue
 )
 
--- Step 2: Use a subquery to calculate window functions separately
+-- Use a subquery to calculate window functions separately
 SELECT 
     md.director,
     md.genres,
@@ -26,13 +26,12 @@ SELECT
     AVG(md.avg_rating) AS avg_movie_rating,
     SUM(md.profit) AS total_profit,
 
-    -- Use a subquery for window functions
     revenue_trends.director_revenue_over_time,
     revenue_trends.director_rating_over_time
 
 FROM MovieData md
 
--- Join with a subquery that handles window functions
+-- Join with a subquery that handles window function
 LEFT JOIN (
     SELECT 
         director,
