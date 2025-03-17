@@ -27,6 +27,21 @@ In order to download the data from kaggle, you need to set up Kaggle API
    ```
 3. **The bash pipeline `run_pipeline.sh` will automatically download the dataset into the data pipeline**
 
+### Pipeline
+
+1. **Extraction**
+   Kaggle data is downloaded using API json key, CPI data is downloaded with `wget`
+   All data files are saved in `team19/data`
+
+2. **Transform**
+   Data is pulled from data folder and fed into pyspark for cleaning.
+   Processed data is saved back into `team19/data`
+
+3. **Lead**
+   DuckDB database intialized under `team19/duckdb`
+   DuckDB executes SQL to create views
+   
+
 ### Tableau Visualization
 We created and publcished an interactive tableau dashboard to visualize our data analysis: 
 
