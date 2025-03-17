@@ -33,7 +33,7 @@ def clean_description(text):
         return text  # Keep NaN values as they are
     return text.replace('"', '')  # Remove all quotes
 
-# Apply only to the 'description' column
+# Apply to the 'description' and 'stars' columns
 if "description" in df.columns:
     df["description"] = df["description"].apply(clean_description)
 
@@ -54,7 +54,7 @@ cpi_file = base_path + 'CPI_data.csv'
 tmdb_file = base_path + 'TMDB_movie_dataset_v11.csv'
 imbd_file = base_path + 'IMBD_cleaned.csv'
 
-# Load CPI data using Pandas
+# Load CPI data using Spark
 cpi = spark.read.csv(cpi_file, header=True, inferSchema=True)
 
 # Load TMDB and IMDB data using Spark
@@ -158,17 +158,17 @@ df_imbd = df_imbd.withColumn(
 
 
 
-# Drop rows with missing essential values
+# Drop rows with missing essential values in TMDB dataset
 df_tmdb = df_tmdb.na.drop(subset=["title"])
 
-# Drop duplicate rows based on title + release year
+# Drop duplicate rows based on title + release year in TMDB dataset
 df_tmdb = df_tmdb.dropDuplicates(["title", "runtime"])
 
-# Drop rows with missing essential values
+# Drop rows with missing essential values in IMBD dataset
 df_imbd = df_imbd.withColumn("director", when(trim(col("director")) == "", None).otherwise(col("director")))
 df_imbd = df_imbd.na.drop(subset=["director"])
 
-# Drop duplicate rows based on title + release year
+# Drop duplicate rows based on title + release year in IMBD dataset
 df_imbd = df_imbd.dropDuplicates(["movie", "runtime"])
 
 df_imbd = df_imbd.withColumnRenamed("runtime", "runtime_")
@@ -185,9 +185,7 @@ df_imbd = df_imbd.withColumn("genre_new", explode(col("genre_array")))
 df_imbd = df_imbd.drop("genre", "genre_array")
 
 
-# prompt: for tmdb, delete the ones who's runtime is 0
-
-# Filter out rows where runtime is 0
+# Filter out rows where runtime is 0 in TMDB
 df_tmdb = df_tmdb.filter(df_tmdb["runtime"] > 0)
 
 df_tmdb = df_tmdb.filter((col("title").isNotNull()) & (col("title") != ""))
@@ -202,10 +200,10 @@ from pyspark.sql.functions import lower
 df_tmdb = df_tmdb.withColumn("title_lower", lower(col("title")))
 df_imbd = df_imbd.withColumn("movie_lower", lower(col("movie")))
 
-# Perform inner join based on lowercase titles and runtime
+# Perform inner join based on lowercase titles and runtime between TMDB and IMBD datsets
 joined_df = df_tmdb.join(df_imbd, df_tmdb["title_lower"] == df_imbd["movie_lower"] , "inner").filter(df_tmdb["runtime"] == df_imbd["runtime_"])
 
-# Perform inner join on joined_df and cpi_data based on movie release dates
+# Perform inner join on joined_df and cpi_data based on CPI release date and the first of the month + year of movie release
 final_joined_df = joined_df.join(cpi, joined_df["release_month"] == cpi["observation_date"], "inner")
 
 
@@ -220,8 +218,10 @@ final_joined_df = final_joined_df.withColumn(
 ).withColumn(
     "revenue_adjusted_cpi", col("revenue") * (cpi_base_value / col("CPIAUCSL")))
 
+# Filter for Columns where revenue > 0
 final_joined_df_filtered = final_joined_df.filter(col("revenue") > 0)
 
+# Drop unnecessary columns
 columns_to_drop = [
     "id", "vote_count", "backdrop_path", "homepage", "imdb_id",
     "original_language", "original_title", "overview", "popularity",
